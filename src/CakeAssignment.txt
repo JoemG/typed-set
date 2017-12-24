@@ -1,0 +1,74 @@
+
+*** SICP http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-10.html ***
+* 1.5 * Abstract Syntax Tree - Applicative vs Normal
+- Using applicative order will result in an infinite loop as p will keep on being expanded to itself.
+- Using normal order the function will evaluate to 0 as the conditional will evaluate before expansion, causing the function to return 0.
+
+* 1.6 * - Statement Evaluation
+- The new-if conditional will cause a stack overflow due to recursively calling itself through the else-clause.
+Regular if has special treatment by the compiler to stop this behaviour.
+
+*** SICP http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html ***
+*  1.10 * Ackermans Function:
+(A 1 10) = 1024
+(A 2 4)  = 65536
+(A 3 3)  = 65536
+
+(define (f n) (A 0 n))
+2n
+(define (g n) (A 1 n))
+2^n
+(define (h n) (A 2 n))
+2^2^… (n-1 times)
+
+*** SICP http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-12.html ***
+* 1.34 * Self reference:
+- (f f) will eventually evaluate to (2 2) which will give an interpreter error as it is an invalid expression.
+* 1.38 * Eulers Natural base:
+
+-pt1 1.37-
+(define (cont-frac n d k)
+    (define (recur i)
+      (if (> i k)
+        0
+        (/ (n i) (+ (d i) (recur (+ 1 i))))))
+  (recur 1))
+
+-pt2 1.38-
+(define (d i)
+   (if (not (= 0 (remainder (+ i 1) 3)))
+       1
+       (* 2 (/ (+ i 1) 3))))
+
+(define e
+    (lambda (k)(+ 2 (cont-frac (lambda (i) 1.0) d k))))
+
+
+-
+* 1.41 * Higher order functions - Doubling of functions:
+
+(define (double functionToDouble)
+        (lambda (x)
+         (functionToDouble (functionToDouble x))))
+
+
+(((double (double double)) inc) 5) evaluates to 21.
+
+* 1.42 * Higher order functions - Composition of functions:
+(define (compose function1 function2)
+   (lambda (x) (function1 (function2 x))))
+
+* 1.43 * Higher order functions & recursion:
+(define (repeat f numberOfRepetitions)
+        (if (= numberOfRepetitions 1)
+                f
+                (compose f (repeat f (- numberOfRepetitions 1)))))
+
+Bonus Question:
+This would appear to be Haskell based on the signature of forall using "::" to express "has type of".
+
+I am not a Haskell developer so I have submitted a solution using Scala (see FunctionalSet.Scala)
+With regards to making a generic version of Set (for example signature: type GenericSet[T] = T => Boolean ), you could probably implement it as a type class.
+
+Caveats: I haven't used any library for testing so there's some assertions.
+The code leans a bit to the generic side of things as I was trying to keep options open for the generic implementation. (isMember would look cleaner if it just dealt with Ints)
